@@ -81,6 +81,26 @@ def get_reward(state):
 	else:
 		return -1	
 
+def test_algo(model):
+	state = init_grid()
+	print display_grid(state)
+	status = 1
+	i = 0
+	while(status==1):
+		i += 1
+		qval = model.predict(state.reshape(1, 64), batch_size=1)
+		action = np.argmax(qval)
+		state = make_move(state, action)
+		print display_grid(state)
+		reward = get_reward(state)
+		print reward
+		if reward != -1:
+			status = 0
+		if i > 10:
+			status = 0
+			print "Too many moves"	
+		
+
 if __name__ == "__main__":
 	model = model.create_model()
 	#print model.predict(state.reshape(1,64), batch_size=1)
@@ -122,3 +142,4 @@ if __name__ == "__main__":
             			status = 0
     			if epsilon > 0.1:
         			epsilon -= (1/epochs)
+	test_algo(model)
