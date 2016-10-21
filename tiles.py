@@ -1,5 +1,6 @@
+import random
 import numpy as np
-
+import model
 def rand_pair(s, e):
 	return np.random.randint(s, e), np.random.randint(s, e)
 
@@ -81,10 +82,17 @@ def get_reward(state):
 		return -1	
 
 if __name__ == "__main__":
-	state = init_grid()
-	state = make_move(state, 2)
-	print get_reward(state)
-	state = make_move(state, 1)
-	print get_reward(state)
-	print display_grid(state)
-	print state
+	#state = init_grid()
+#	state = make_move(state, 2)
+#	print get_reward(state)
+#	state = make_move(state, 1)
+#	print get_reward(state)
+#	print display_grid(state)
+#	print state
+	model = model.create_model()
+	#print model.predict(state.reshape(1,64), batch_size=1)
+	
+	#Training phase
+	epochs = 1000
+	gamma = 0.9
+	epsilon = 1	
