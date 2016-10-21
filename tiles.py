@@ -82,17 +82,43 @@ def get_reward(state):
 		return -1	
 
 if __name__ == "__main__":
-	#state = init_grid()
-#	state = make_move(state, 2)
-#	print get_reward(state)
-#	state = make_move(state, 1)
-#	print get_reward(state)
-#	print display_grid(state)
-#	print state
 	model = model.create_model()
 	#print model.predict(state.reshape(1,64), batch_size=1)
 	
 	#Training phase
 	epochs = 1000
 	gamma = 0.9
-	epsilon = 1	
+	epsilon = 1
+	for i in range(epochs):
+		state = init_grid()
+		status = 1
+		while(status == 1):
+			#run the network to get the q values
+			qval = model.predict(state.reshape(1, 64), batch_size=1)
+			#choosing random action, exploration vs exploitation
+			if random.random() < epsilon:
+				action = np.random.randint(0, 4)
+			else:
+				action = (np.argmax(qval))
+			#take action according to obtained action
+			new_state = make_move(state, action)
+			#observe reward
+			reward = get_reward(state)
+			newQ = model.predict(new_state.reshape(1,64), batch_size=1)
+        		maxQ = np.max(newQ)
+        		y = np.zeros((1,4))
+			y[:] = qval[:]
+			#non-terminal state
+			if reward == -1:
+            			update = (reward + (gamma * maxQ))
+        		#terminal state
+			else: 
+            			update = reward
+			#target output
+			y[0][action] = update
+			model.fit(state.reshape(1,64), y, batch_size=1, nb_epoch=1, verbose=1)
+        		state = new_state
+        		if reward != -1:
+            			status = 0
+    			if epsilon > 0.1:
+        			epsilon -= (1/epochs)
